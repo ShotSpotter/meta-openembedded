@@ -1,0 +1,30 @@
+[PATCH] not install node_name
+
+Upstream-Status: Inappropriate [cross compiling specific]
+
+when cross-compile, the compile host name is written into node_name file,
+but target host name should be written, so not install node_name, and create
+it when pkg-install
+
+Signed-off-by: Roy Li <rongqing.li@windriver.com>
+---
+ osaf/services/saf/clmsv/config/Makefile.am | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/osaf/services/saf/clmsv/config/Makefile.am b/osaf/services/saf/clmsv/config/Makefile.am
+index 15b8702..88c8d24 100644
+--- a/osaf/services/saf/clmsv/config/Makefile.am
++++ b/osaf/services/saf/clmsv/config/Makefile.am
+@@ -39,9 +39,3 @@ dist_pkgimmxml_svc_DATA += \
+ endif
+ 
+ endif
+-
+-install-data-hook:
+-	hostname -s > $(DESTDIR)$(pkgsysconfdir)/node_name
+-
+-uninstall-hook:
+-	rm -f $(DESTDIR)$(pkgsysconfdir)/node_name
+-- 
+1.9.1
+
