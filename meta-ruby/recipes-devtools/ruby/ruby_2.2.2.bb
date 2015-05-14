@@ -31,6 +31,12 @@ do_install() {
     oe_runmake 'DESTDIR=${D}' install
 }
 
+do_install_append () {
+if [ "${PN}" != "ruby-native" ]; then
+    sed -i "s/sysroot=[0-9a-z\/\-]*/sysroot=\//g" ${D}/usr/lib/ruby/*/*/rbconfig.rb
+fi
+}
+
 FILES_${PN} += "${datadir}/rubygems \
                 ${datadir}/ri"
 
