@@ -16,17 +16,16 @@ SRC_URI = "http://www.squid-cache.org/Versions/v${MAJ_VER}/${MIN_VER}/${BPN}-${P
            file://Set-up-for-cross-compilation.patch \
            file://Skip-AC_RUN_IFELSE-tests.patch \
            file://Fix-flawed-dynamic-ldb-link-test-in-configure.patch \
-           file://squid-change-ksh-reference-in-krb-ldap-helper-to-sh.patch \
            file://squid-use-serial-tests-config-needed-by-ptest.patch \
            file://run-ptest \
            file://volatiles.03_squid \
 "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=c492e2d6d32ec5c1aad0e0609a141ce9 \
-                    file://COPYRIGHT;md5=2900f50789c498be8e9f1eb23b55cbe9 \
+                    file://errors/COPYRIGHT;md5=0fed8f1462f6fdbc62bb431bcb618f46 \
                    "
-SRC_URI[md5sum] = "9951034b10f7ee0f45a95cfae61c57c2"
-SRC_URI[sha256sum] = "7b423f3d3495a317503ca559ea535f80445fd7c4e3c3e268cb7a8c97c61af2b6"
+SRC_URI[md5sum] = "6aac5c2e9cbbeabcbf2e9e49a178a931"
+SRC_URI[sha256sum] = "741c24a307c50f0d845d53cabb66b36d91ce9a73c8a165eae5def5e4d11e6a0d"
 
 DEPENDS = "libtool krb5 openldap db cyrus-sasl"
 
@@ -38,6 +37,8 @@ USERADD_PARAM_${PN} = "--system --no-create-home --home-dir /var/run/squid --she
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[libnetfilter-conntrack] = "--with-netfilter-conntrack=${includedir}, --without-netfilter-conntrack, libnetfilter-conntrack"
 EXTRA_OECONF += "--with-default-user=squid"
+export BUILDCXXFLAGS="${BUILD_CXXFLAGS}"
+CACHED_CONFIGUREVARS += "squid_cv_gnu_atomics=yes"
 
 TESTDIR = "test-suite"
 do_compile_ptest() {
