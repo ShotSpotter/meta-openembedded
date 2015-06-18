@@ -1,0 +1,28 @@
+--- samba-4.1.12.orig/buildtools/wafsamba/samba_bundled.py	2013-06-13 18:21:02.000000000 +0900
++++ samba-4.1.12/buildtools/wafsamba/samba_bundled.py	2015-06-15 10:57:52.064000328 +0900
+@@ -1,7 +1,7 @@
+ # functions to support bundled libraries
+ 
+ from Configure import conf
+-import sys, Logs
++import sys, Logs, imp
+ from samba_utils import *
+ 
+ def PRIVATE_NAME(bld, name, private_extension, private_library):
+@@ -232,6 +232,16 @@ def CHECK_BUNDLED_SYSTEM_PYTHON(conf, li
+         m = __import__(modulename)
+     except ImportError:
+         found = False
++
++        build_arch = os.environ["BUILD_ARCH"]
++        host_arch = os.environ["HOST_ARCH"]
++        if build_arch != host_arch:
++            # Some modules maybe can not be imported while cross compile
++            # We just check whether the module exist
++            stuff = imp.find_module(modulename, [os.environ["PYTHONPATH"]])
++            if stuff != None:
++                Logs.warn('Cross module[%s] has been found, but can not be loaded.' % (stuff[1]))
++                found = True
+     else:
+         try:
+             version = m.__version__
