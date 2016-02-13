@@ -13,7 +13,6 @@ SRC_URI = "${SAVANNAH_GNU_MIRROR}/${BPN}/${BP}.tar.gz \
     file://60-gpsd.rules \
     file://gpsd.service \
 "
-
 SRC_URI[md5sum] = "afd79b87337fadf38ee2a7c4314dac79"
 SRC_URI[sha256sum] = "81c89e271ae112313e68655ab30d227bc38fe7841ffbff0f1860b12a9d7696ea"
 
@@ -25,7 +24,7 @@ INITSCRIPT_PARAMS = "defaults 35"
 SYSTEMD_OESCONS = "${@base_contains('DISTRO_FEATURES', 'systemd', 'true', 'false',d)}"
 
 export STAGING_INCDIR
-export STAGING_BASE_LIBDIR
+export STAGING_LIBDIR
 
 PACKAGECONFIG ??= "qt ${@base_contains('DISTRO_FEATURES', 'bluetooth', '${BLUEZ}', '', d)}"
 PACKAGECONFIG[bluez4] = "bluez='true',bluez='false',bluez4"
@@ -76,8 +75,8 @@ do_install_append() {
     #support for udev
     install -d ${D}/${sysconfdir}/udev/rules.d
     install -m 0644 ${WORKDIR}/60-gpsd.rules ${D}/${sysconfdir}/udev/rules.d
-    install -d ${D}${base_base_libdir}/udev/
-    install -m 0755 ${S}/gpsd.hotplug ${D}${base_base_libdir}/udev/
+    install -d ${D}${base_libdir}/udev/
+    install -m 0755 ${S}/gpsd.hotplug ${D}${base_libdir}/udev/
 
     #support for python
     install -d ${D}/${PYTHON_SITEPACKAGES_DIR}/gps
@@ -99,23 +98,23 @@ pkg_postrm_${PN}-conf() {
 
 PACKAGES =+ "libgps libgpsd python-pygps-dbg python-pygps gpsd-udev gpsd-conf gpsd-gpsctl gps-utils"
 
-FILES_${PN}-dev += "${base_libdir}/pkgconfdir/libgpsd.pc ${base_libdir}/pkgconfdir/libgps.pc \
-                    ${base_libdir}/libQgpsmm.prl"
+FILES_${PN}-dev += "${libdir}/pkgconfdir/libgpsd.pc ${libdir}/pkgconfdir/libgps.pc \
+                    ${libdir}/libQgpsmm.prl"
 
-FILES_python-pygps-dbg += " ${base_libdir}/python*/site-packages/gps/.debug"
+FILES_python-pygps-dbg += " ${libdir}/python*/site-packages/gps/.debug"
 
 RDEPENDS_${PN} = "gpsd-gpsctl"
 RRECOMMENDS_${PN} = "gpsd-conf gpsd-udev gpsd-machine-conf"
 
 SUMMARY_gpsd-udev = "udev relevant files to use gpsd hotplugging"
-FILES_gpsd-udev = "${base_base_libdir}/udev ${sysconfdir}/udev/*"
+FILES_gpsd-udev = "${base_libdir}/udev ${sysconfdir}/udev/*"
 RDEPENDS_gpsd-udev += "udev gpsd-conf"
 
 SUMMARY_libgpsd = "C service library used for communicating with gpsd"
-FILES_libgpsd = "${base_libdir}/libgpsd.so.*"
+FILES_libgpsd = "${libdir}/libgpsd.so.*"
 
 SUMMARY_libgps = "C service library used for communicating with gpsd"
-FILES_libgps = "${base_libdir}/libgps.so.*"
+FILES_libgps = "${libdir}/libgps.so.*"
 
 SUMMARY_gpsd-conf = "gpsd configuration files and init scripts"
 FILES_gpsd-conf = "${sysconfdir}"
