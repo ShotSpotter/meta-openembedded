@@ -3,7 +3,7 @@ SECTION = "console/network"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d217a23f408e91c94359447735bc1800"
 DEPENDS = "dbus dbus-glib ncurses python libusb1 chrpath-replacement-native pps-tools"
-PROVIDES = "virtual/gpsd"
+PROVIDES = "virtual/gpsd libgps libgpsd"
 
 EXTRANATIVEPATH += "chrpath-native"
 
@@ -32,6 +32,7 @@ PACKAGECONFIG[qt] = "qt='true',qt='false',qt4-x11-free"
 PACKAGECONFIG[python] = "python='true',python='false',,python"
 
 EXTRA_OESCONS = " \
+    libdir=${libdir} \
     sysroot=${STAGING_DIR_TARGET} \
     libQgpsmm='false' \
     debug='true' \
@@ -62,7 +63,7 @@ do_install() {
 
     export DESTDIR="${D}"
     # prefix is used for RPATH and DESTDIR/prefix for instalation
-    ${STAGING_BINDIR_NATIVE}/scons prefix=${prefix} install ${EXTRA_OESCONS}|| \
+    ${STAGING_BINDIR_NATIVE}/scons prefix=${prefix} LIBDIR=${libdir} install ${EXTRA_OESCONS}|| \
       bbfatal "scons install execution failed."
 }
 
@@ -98,8 +99,9 @@ pkg_postrm_${PN}-conf() {
 
 PACKAGES =+ "libgps libgpsd python-pygps-dbg python-pygps gpsd-udev gpsd-conf gpsd-gpsctl gps-utils"
 
-FILES_${PN}-dev += "${libdir}/pkgconfdir/libgpsd.pc ${libdir}/pkgconfdir/libgps.pc \
-                    ${libdir}/libQgpsmm.prl"
+FILES_${PN}-dev += "${libdir}/pkgconf/libgpsd.pc \
+		${libdir}/pkgconf/libgps.pc \
+		${libdir}/libQgpsmm.prl"
 
 FILES_python-pygps-dbg += " ${libdir}/python*/site-packages/gps/.debug"
 
