@@ -20,6 +20,9 @@ SRC_URI = "git://github.com/jackaudio/jack1.git \
 
 S = "${WORKDIR}/git"
 
+# https://community.freescale.com/thread/314920
+ALLOW_EMPTY_${PN}-dev = "1"
+
 inherit autotools pkgconfig
 
 EXTRA_OECONF = "--enable-timestamps \
