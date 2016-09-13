@@ -6,8 +6,8 @@ LICENSE = "LGPLv2.1"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=bbb461211a33b134d42ed5ee802b37ff"
 
-SRCREV = "b8a19dc860b38c97c42115d8a559b78853452a4b"
-PV = "0.2.3+git${SRCPV}"
+SRCREV = "9158278ad35b46ce9a49b2e887483c6d8c287994"
+PV = "0.2.8+git${SRCPV}"
 
 SRC_URI = "git://git.fedorahosted.org/netcf.git;protocol=git \
 "
@@ -16,16 +16,52 @@ DEPENDS += "augeas libnl libxslt libxml2 gnulib"
 
 S = "${WORKDIR}/git"
 
-inherit gettext autotools-brokensep pkgconfig
+inherit gettext autotools pkgconfig systemd
 
 EXTRA_OECONF_append_class-target = " --with-driver=redhat"
+
+PACKAGECONFIG ??= "${@bb.utils.contains("DISTRO_FEATURES", "systemd", "systemd", "", d)}"
+PACKAGECONFIG[systemd] = "--with-sysinit=systemd,--with-sysinit=initscripts,"
+
 do_configure_prepend() {
-	cd ${S}
-	rm -f .gitmodules
-	./bootstrap --gnulib-srcdir=${STAGING_DATADIR}/gnulib
+    currdir=`pwd`
+    cd ${S}
+
+    # avoid bootstrap cloning gnulib on every configure
+    # the dir starts out empty from the pkg, but unconditionally blow it
+    # away so if we reconfigure due to gnulib sysroot sig changes, we will
+    # get the newer gnulib content into the build here.
+    rm -rf ${S}/.gnulib
+    cp -rf ${STAGING_DATADIR}/gnulib ${S}/.gnulib
+
+    # --force to avoid errors on reconfigure e.g if recipes changed we depend on
+    # | bootstrap: running: libtoolize --quiet
+    # | libtoolize:   error: 'libltdl/COPYING.LIB' exists: use '--force' to overwrite
+    # | ...
+    ./bootstrap --force --no-git --gnulib-srcdir=.gnulib
+
+    cd $currdir
 }
 
 do_install_append() {
-     mv ${D}${sysconfdir}/rc.d/init.d/ ${D}${sysconfdir}
-     rm -rf ${D}${sysconfdir}/rc.d/
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
+       install -d ${D}${systemd_unitdir}/system
+       if [ -d "${D}${libdir}/systemd/system" ]; then
+           mv ${D}${libdir}/systemd/system/* ${D}${systemd_unitdir}/system/
+           rm -rf ${D}${libdir}/systemd/
+       else
+           mv ${D}${nonarch_libdir}/systemd/system/* ${D}${systemd_unitdir}/system/
+           rm -rf ${D}${nonarch_libdir}/systemd/
+       fi
+    else
+       mv ${D}${sysconfdir}/rc.d/init.d/ ${D}${sysconfdir}
+       rm -rf ${D}${sysconfdir}/rc.d/
+    fi
 }
+
+FILES_${PN} += " \
+        ${libdir} \
+        ${nonarch_libdir} \
+        "
+
+SYSTEMD_SERVICE_${PN} = "netcf-transaction.service"

@@ -16,3 +16,5 @@ S = "${WORKDIR}/git"
 EXTRA_OE_CONF = "--enable-vt"
 
 inherit autotools-brokensep
+
+PARALLEL_MAKE = ""

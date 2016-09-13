@@ -2,13 +2,13 @@ SUMMARY = "A client for the Cisco3000 VPN Concentrator"
 HOMEPAGE = "http://www.unix-ag.uni-kl.de/~massar/vpnc/"
 AUTHOR = "Maurice Massar vpnc@unix-ag.uni-kl.de"
 SECTION = "net"
-PRIORITY = "optional"
 LICENSE = "GPL-2.0+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=173b74cb8ac640a9992c03f3bce22a33"
 DEPENDS = "libgcrypt"
 
 inherit perlnative
 
+EXTRA_OEMAKE = "-e MAKEFLAGS="
 CFLAGS_append = ' -DVERSION=\\"${PV}\\"'
 LDFLAGS_append = " -lgcrypt -lgpg-error"
 
@@ -18,10 +18,17 @@ do_configure_append () {
 }
 
 do_install () {
-    sed -i s:m600:m\ 600:g Makefile    
+    sed -i s:m600:m\ 600:g Makefile
     oe_runmake 'DESTDIR=${D}' 'PREFIX=/usr' install
     rm -f ${D}${sysconfdir}/vpnc/vpnc.conf #This file is useless
     install ${WORKDIR}/default.conf ${D}${sysconfdir}/vpnc/default.conf
+}
+
+SYSROOT_PREPROCESS_FUNCS += "vpnc_sysroot_preprocess"
+
+vpnc_sysroot_preprocess () {
+    install -d ${SYSROOT_DESTDIR}${sysconfdir}/vpnc
+    install -m 755 ${D}${sysconfdir}/vpnc/vpnc-script ${SYSROOT_DESTDIR}${sysconfdir}/vpnc
 }
 
 CONFFILES_${PN} = "${sysconfdir}/vpnc/default.conf"

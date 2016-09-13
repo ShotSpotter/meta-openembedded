@@ -4,12 +4,13 @@ BUGTRACKER = "https://bugzilla.gnome.org/enter_bug.cgi?product=Gstreamer"
 SECTION = "multimedia"
 DEPENDS = "gstreamer"
 
-inherit autotools pkgconfig
+# gobject-introspection to get --disable-introspection into UNKNOWN_CONFIGURE_WHITELIST
+inherit autotools pkgconfig gobject-introspection
 
 SRC_URI = "http://gstreamer.freedesktop.org/src/${BPN}/${BPN}-${PV}.tar.bz2"
 
 GSTREAMER_DEBUG ?= "--disable-debug"
-EXTRA_OECONF = "--disable-valgrind ${GSTREAMER_DEBUG} --disable-examples "
+EXTRA_OECONF = "--disable-valgrind ${GSTREAMER_DEBUG} --disable-examples --disable-introspection"
 
 acpaths = "-I ${S}/common/m4 -I ${S}/m4"
 
@@ -22,7 +23,7 @@ PACKAGES_DYNAMIC += "^${PN}-.*"
 # ${STAGING_DATADIR_NATIVE}/gettext/po/Makefile.in.in, but before configure is executed
 # http://lists.linuxtogo.org/pipermail/openembedded-core/2012-November/032233.html
 oe_runconf_prepend() {
-	if [ -e ${S}/po/Makefile.in.in ]; then
-		sed -i -e "1a\\" -e 'GETTEXT_PACKAGE = @GETTEXT_PACKAGE@' ${S}/po/Makefile.in.in
-	fi
+    if [ -e ${S}/po/Makefile.in.in ]; then
+        sed -i -e "1a\\" -e 'GETTEXT_PACKAGE = @GETTEXT_PACKAGE@' ${S}/po/Makefile.in.in
+    fi
 }

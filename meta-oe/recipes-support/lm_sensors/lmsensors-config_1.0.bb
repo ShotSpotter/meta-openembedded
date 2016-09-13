@@ -10,6 +10,7 @@ SRC_URI = "file://fancontrol \
            file://sensord.cgi \
            file://sensord.conf \
            file://sensors.conf \
+           file://sensord \
 "
 S = "${WORKDIR}"
 
@@ -17,9 +18,9 @@ RDEPENDS_${PN}-dev = ""
 
 do_install() {
     # Install fancontrol configuration file
-    install -d ${D}${sysconfdir}
+    install -d ${D}${sysconfdir}/sysconfig
     install -m 0644 ${WORKDIR}/fancontrol ${D}${sysconfdir}
-
+    install -m 0644 ${WORKDIR}/sensord ${D}${sysconfdir}/sysconfig
     # Install libsensors configuration file
     install -d ${D}${sysconfdir}/sensors.d
     install -m 0644 ${WORKDIR}/sensors.conf ${D}${sysconfdir}/sensors.d
@@ -47,13 +48,16 @@ PACKAGES =+ "${PN}-fancontrol"
 PACKAGES =+ "${PN}-cgi"
 RRECOMMENDS_${PN}-cgi = "lighttpd lighttpd-module-cgi"
 RDEPENDS_${PN}-cgi = "${PN}-sensord rrdtool"
-FILES_${PN}-cgi = "/www/*" 
+FILES_${PN}-cgi = "/www/*"
 
 # libsensors configuration file
 FILES_${PN}-libsensors = "${sysconfdir}/sensors.d/sensors.conf"
 
 # sensord logging daemon configuration files
-FILES_${PN}-sensord = "${sysconfdir}/sensord.conf"
+FILES_${PN}-sensord = "\
+    ${sysconfdir}/sensord.conf \
+    ${sysconfdir}/sysconfig/sensord \
+"
 
 # fancontrol script configuration file
 FILES_${PN}-fancontrol = "${sysconfdir}/fancontrol"

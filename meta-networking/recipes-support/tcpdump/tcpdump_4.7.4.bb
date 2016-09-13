@@ -22,6 +22,8 @@ CACHED_CONFIGUREVARS = "ac_cv_linux_vers=${ac_cv_linux_vers=2}"
 PACKAGECONFIG ??= "openssl ipv6"
 PACKAGECONFIG[openssl] = "--with-crypto=yes, --without-openssl --without-crypto, openssl"
 PACKAGECONFIG[ipv6] = "--enable-ipv6, --disable-ipv6,"
+PACKAGECONFIG[smi] = "--with-smi, --without-smi,libsmi"
+PACKAGECONFIG[libcap-ng] = "--with-cap-ng=yes,--with-cap-ng=no,libcap-ng"
 
 EXTRA_AUTORECONF += " -I m4"
 
@@ -45,5 +47,5 @@ do_install_append() {
 }
 
 do_compile_ptest() {
-	oe_runmake buildtest-TESTS
+    oe_runmake buildtest-TESTS
 }

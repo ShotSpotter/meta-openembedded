@@ -10,11 +10,13 @@ inherit gnome
 
 SRC_URI[archive.md5sum] = "b4e8ab5c7556ae07addbfcfb4fa2f761"
 SRC_URI[archive.sha256sum] = "7c568b57358e5c08f4d8dd76dbac7df2539135ad081872b60514b7a8ac797e66"
+GNOME_COMPRESS_TYPE="bz2"
 
 LDFLAGS += "-lgthread-2.0 -lxml2"
 
 do_configure_prepend() {
     sed -i s:help::g ${S}/Makefile.am
+    rm -f ${S}/m4/gnome-doc-utils.m4
 }
 do_install_append() {
     rm -rf ${D}${datadir}/mime
@@ -29,3 +31,5 @@ FILES_${PN} += "${datadir}/icon* \
 FILES_${PN}-dbg += "${libdir}/window-manager-settings/.debug"
 FILES_${PN}-dev += "${libdir}/window-manager-settings/*.la"
 FILES_${PN}-staticdev += "${libdir}/window-manager-settings/*.a"
+
+PNBLACKLIST[gnome-control-center] ?= "Depends on broken gnome-menus"

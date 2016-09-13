@@ -15,7 +15,7 @@ SRC_URI = "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.bz
            file://check_fix.patch \
            file://gst-inspect-check-error.patch \
            file://0001-baseparse-Fix-self-comparison-always-evaluates-to-tr.patch \
-           file://gstreamer-change-priv_gst_parse_yylex-arguments.patch \
+           file://0001-parse-make-grammar.y-work-with-Bison-3.patch \
 "
 
 SRC_URI[md5sum] = "a0cf7d6877f694a1a2ad2b4d1ecb890b"
@@ -28,6 +28,7 @@ EXTRA_OECONF = "--disable-docbook --disable-gtk-doc \
             --disable-dependency-tracking --disable-check \
             --disable-examples --disable-tests \
             --disable-valgrind ${GSTREAMER_DEBUG} \
+            --disable-introspection \
             "
 
 CACHED_CONFIGUREVARS += "ac_cv_header_valgrind_valgrind_h=no"
@@ -40,7 +41,7 @@ oe_runconf_prepend() {
 }
 
 #do_compile_prepend () {
-#	mv ${WORKDIR}/gstregistrybinary.[ch] ${S}/gst/
+#    mv ${WORKDIR}/gstregistrybinary.[ch] ${S}/gst/
 #}
 
 RRECOMMENDS_${PN}_qemux86    += "kernel-module-snd-ens1370 kernel-module-snd-rawmidi"

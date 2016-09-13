@@ -18,6 +18,8 @@ RRECOMMENDS_${PN} = " \
     xfwm4-theme-kokodi \
     xfwm4-theme-moheli \
     \
+    xfce-dusk-gtk3 \
+    \
     xfce4-cpufreq-plugin \
     xfce4-cpugraph-plugin \
     xfce4-datetime-plugin \
@@ -45,6 +47,13 @@ RRECOMMENDS_${PN} = " \
     xfce4-mailwatch-plugin \
     xfce4-kbdleds-plugin \
     xfce4-smartbookmark-plugin \
+    xfce4-hotcorner-plugin \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'xfce4-pulseaudio-plugin', '', d)} \
+    xfce4-sensors-plugin \
+    xfce4-calculator-plugin \
+    xfce4-verve-plugin \
+    \
+    xfce-polkit \
     \
     thunar-media-tags-plugin \
     thunar-archive-plugin \

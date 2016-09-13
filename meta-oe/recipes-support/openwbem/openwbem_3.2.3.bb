@@ -61,10 +61,10 @@ do_install() {
     install -d ${D}/etc/openwbem/openwbem.conf.d
     install -d ${D}/var/adm/fillup-templates
     install -m 644 etc/sysconfig/daemons/owcimomd ${D}/var/adm/fillup-templates/sysconfig.owcimomd
-    
+
     # fix up hardcoded paths
     sed -i -e 's,/usr/sbin/,${sbindir}/,' ${WORKDIR}/owcimomd.service
-    if ${@base_contains('DISTRO_FEATURES','systemd','true','false',d)}; then
+    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}/${systemd_unitdir}/system
         install -m 644 ${WORKDIR}/owcimomd.service ${D}/${systemd_unitdir}/system
         install -m 755 ${WORKDIR}/checkserverkey ${D}${sysconfdir}/openwbem/
@@ -93,7 +93,7 @@ do_install() {
     touch ${D}/var/lib/openwbem/{classassociation,instances,instassociation,namespaces,schema}.{dat,ndx,lock}
 }
 
-inherit ${@base_contains('VIRTUAL-RUNTIME_init_manager','systemd','systemd','', d)}
+inherit ${@bb.utils.contains('VIRTUAL-RUNTIME_init_manager','systemd','systemd','', d)}
 SYSTEMD_SERVICE_${PN} = "owcimomd.service"
 SYSTEMD_AUTO_ENABLE = "disable"
 FILES_${PN} += " \
@@ -110,3 +110,6 @@ FILES_${PN}-dev = " \
     ${includedir} \
     ${datadir}/aclocal/openwbem.m4 \
 "
+
+# http://errors.yoctoproject.org/Errors/Details/68630/
+PNBLACKLIST[openwbem] ?= "BROKEN: fails to build with gcc-6"

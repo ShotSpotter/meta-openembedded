@@ -23,6 +23,7 @@ SRC_URI += " \
 
 SRC_URI[archive.md5sum] = "dbe5187a2e17881cc454e313e0ae8d1e"
 SRC_URI[archive.sha256sum] = "034d23af0ea18d86e5543e707212d9297ec7d83f221808968af266dbebc0e703"
+GNOME_COMPRESS_TYPE="bz2"
 
 EXTRA_OECONF = " \
     --enable-authentication-scheme=shadow \
@@ -33,6 +34,7 @@ EXTRA_OECONF = " \
 
 do_configure_prepend() {
     sed -i -e "s:\bdocs::g" ${S}/Makefile.am
+    rm -f ${S}/m4/gnome-doc-utils.m4
 }
 
 do_install_prepend() {
@@ -102,3 +104,5 @@ pkg_postrm_${PN} () {
     delgroup gdm || true
     sed -i /gdm/d ${sysconfdir}/X11/default-display-manager || true
 }
+
+PNBLACKLIST[gdm] ?= "Depends on broken gnome-panel"

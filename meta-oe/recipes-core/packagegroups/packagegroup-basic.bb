@@ -22,7 +22,7 @@ MACHINE_EXTRA_RRECOMMENDS ?= ""
 TASK_BASIC_SSHDAEMON ?= "dropbear openssh-sftp openssh-sftp-server"
 
 #
-# The section below is designed to match with packagegroup-boot, but doesn't depend on it to allow for more freedom 
+# The section below is designed to match with packagegroup-boot, but doesn't depend on it to allow for more freedom
 # when writing image recipes.
 # It also avoids the choice between connman/networkmanager/ifupdown since that is an image feature, not a
 # distro feature.
@@ -38,16 +38,16 @@ RDEPENDS_${PN} = "\
 # The following section is split in 3:
 #   1) Machine features: kernel modules and userspace helpers for those
 #   2) Distro features: packages associated with those
-#   3) Nice to have: packages that are nice to have, but aren't strictly needed  
+#   3) Nice to have: packages that are nice to have, but aren't strictly needed
 #
 RRECOMMENDS_${PN} = "\
     ${MACHINE_EXTRA_RRECOMMENDS} \
-    ${@base_contains("MACHINE_FEATURES", "usbhost", "usbutils", "", d)} \
-    ${@base_contains("MACHINE_FEATURES", "alsa", "alsa-utils-alsamixer", "", d)} \
-    ${@base_contains("MACHINE_FEATURES", "usbgadget", "kernel-module-g-ether kernel-module-g-serial kernel-module-g-mass-storage", "", d)} \
+    ${@bb.utils.contains("MACHINE_FEATURES", "usbhost", "usbutils", "", d)} \
+    ${@bb.utils.contains("MACHINE_FEATURES", "alsa", "alsa-utils-alsamixer", "", d)} \
+    ${@bb.utils.contains("MACHINE_FEATURES", "usbgadget", "kernel-module-g-ether kernel-module-g-serial kernel-module-g-mass-storage", "", d)} \
     \
-    ${@base_contains("DISTRO_FEATURES", "bluetooth", "${BLUEZ}", "", d)} \
-    ${@base_contains("DISTRO_FEATURES", "wifi", "iw wpa-supplicant", "", d)} \
+    ${@bb.utils.contains("DISTRO_FEATURES", "bluetooth", "${BLUEZ}", "", d)} \
+    ${@bb.utils.contains("DISTRO_FEATURES", "wifi", "iw wpa-supplicant", "", d)} \
     \
     tzdata \
     \

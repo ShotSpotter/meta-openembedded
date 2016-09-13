@@ -12,7 +12,7 @@ SRC_URI = "file://xserver-nodm \
 "
 S = "${WORKDIR}"
 
-inherit allarch update-rc.d systemd
+inherit update-rc.d systemd
 
 INITSCRIPT_NAME = "xserver-nodm"
 INITSCRIPT_PARAMS = "start 01 5 . stop 01 0 1 2 3 6 ."
@@ -24,7 +24,7 @@ do_install() {
 
     install -d ${D}${sysconfdir}/default
 
-    if ${@base_contains('DISTRO_FEATURES','systemd','true','false',d)}; then
+    if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d ${D}${systemd_unitdir}/system
         install xserver-nodm.conf ${D}${sysconfdir}/default/xserver-nodm
         install -m 0644 ${WORKDIR}/xserver-nodm.service ${D}${systemd_unitdir}/system

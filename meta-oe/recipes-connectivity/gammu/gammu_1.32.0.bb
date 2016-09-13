@@ -1,6 +1,6 @@
 SUMMARY = "GNU All Mobile Managment Utilities"
 SECTION = "console/network"
-DEPENDS = "cmake-native virtual/libiconv libdbi mysql5 glib-2.0 udev"
+DEPENDS = "cmake-native virtual/libiconv libdbi mysql5 glib-2.0 udev libgudev"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a17cb0a873d252440acfdf9b3d0e7fbf"
 HOMEPAGE = "http://www.gammu.org/"
@@ -55,3 +55,14 @@ FILES_python-${PN} = "${PYTHON_SITEPACKAGES_DIR}/gammu/*.??"
 
 RDEPENDS_${PN} += "bash"
 RDEPENDS_${PN}-dev += "bash"
+
+# Fails to build with thumb-1 (qemuarm)
+# gammu-1.32.0/libgammu/service/sms/gsmems.c:542:1: internal compiler error: in patch_jump_insn, at cfgrtl.c:1275
+# |  }
+# |  ^
+# | Please submit a full bug report,
+# | with preprocessed source if appropriate.
+# | See <http://gcc.gnu.org/bugs.html> for instructions.
+# | make[2]: *** [libgammu/CMakeFiles/libGammu.dir/service/sms/gsmems.o] Error 1
+# | make[2]: *** Waiting for unfinished jobs....
+ARM_INSTRUCTION_SET = "arm"

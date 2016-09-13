@@ -6,7 +6,7 @@ DEPENDS = "xkbcomp gtk+ iso-codes libxi libxml2"
 
 GNOME_COMPRESS_TYPE = "xz"
 
-inherit gnomebase gettext
+inherit gnomebase gettext gobject-introspection
 SRC_URI[archive.md5sum] = "290ea2a8abc40f78a3a16bdae6f02808"
 SRC_URI[archive.sha256sum] = "ebec3bc54b5652838502b96223152fb1cd8fcb14ace5cb02d718fc3276bbd404"
 

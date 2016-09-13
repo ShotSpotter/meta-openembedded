@@ -1,7 +1,7 @@
 require espeak.inc
 inherit siteinfo
 
-EXTRA_PHONEMES = '${@base_contains("SITEINFO_ENDIANNESS", "be",  "espeak-data (= ${PV})", "", d)}'
+EXTRA_PHONEMES = '${@bb.utils.contains("SITEINFO_ENDIANNESS", "be",  "espeak-data (= ${PV})", "", d)}'
 RDEPENDS_${PN} = "portaudio-v19 ${EXTRA_PHONEMES}"
 
 SRC_URI[md5sum] = "5c7b292d0537232868b4ac1317d76c02"
@@ -40,4 +40,5 @@ do_install() {
     fi
 
     cp -prf ${S}/espeak-data/* ${D}${datadir}/espeak-data
+    chown -R root:root ${D}${datadir}/espeak-data
 }

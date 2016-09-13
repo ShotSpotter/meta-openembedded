@@ -25,14 +25,23 @@ PACKAGE_BEFORE_PN += "${PN}-server"
 FILES_${PN}-server = "${bindir}/mosh-server"
 
 NEEDED_PERL_MODULES = "\
-	perl-module-socket \
-	perl-module-getopt-long \
-	perl-module-errno \
-	perl-module-io-socket-inet \
-	perl-module-posix \
+    perl-module-socket \
+    perl-module-getopt-long \
+    perl-module-errno \
+    perl-module-io-socket-inet \
+    perl-module-posix \
 "
 
 # mosh uses SSH to authenticate and the client uses OpenSSH-specific features
 RDEPENDS_${PN} += "openssh-ssh ${NEEDED_PERL_MODULES}"
 # The server seemed not to work with dropbear either
 RDEPENDS_${PN}-server += "openssh-sshd ${NEEDED_PERL_MODULES}"
+
+# Fails to build with thumb-1 (qemuarm)
+#| {standard input}: Assembler messages:
+#| {standard input}:2100: Error: instruction not supported in Thumb16 mode -- `adds r4,r4,r4'
+#| {standard input}:2101: Error: instruction not supported in Thumb16 mode -- `adcs r5,r5,r5'
+#| {standard input}:2102: Error: instruction not supported in Thumb16 mode -- `adcs r6,r6,r6'
+#| {standard input}:2103: Error: instruction not supported in Thumb16 mode -- `adcs r7,r7,r7'
+#| {standard input}:2104: Error: selected processor does not support Thumb mode `it cs'
+ARM_INSTRUCTION_SET = "arm"

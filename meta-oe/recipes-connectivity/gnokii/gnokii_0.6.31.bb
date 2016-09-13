@@ -5,10 +5,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=0636e73ff0215e8d672dc4c32c317bb3"
 
 SRC_URI = "http://www.gnokii.org/download/gnokii/gnokii-${PV}.tar.bz2"
 
-DEPENDS = "glib-2.0"
+DEPENDS = "glib-2.0 intltool-native"
 X11DEPENDS = " libxpm gtk+"
 
-PACKAGECONFIG ??= "${@base_contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
 PACKAGECONFIG[bluez4] = "--enable-bluetooth,--disable-bluetooth,bluez4"
 PACKAGECONFIG[libical] = "--enable-libical,--disable-libical,libical"
 PACKAGECONFIG[pcsc-lite] = "--enable-libpcsclite,--disable-libpcsclite,pcsc-lite"
@@ -24,8 +24,9 @@ EXTRA_OECONF = "--disable-smsd"
 
 FILES_${PN} = "${bindir} ${sbindir}"
 FILES_libgnokii-dev = "${includedir} ${libdir}/lib*.so ${libdir}/*.la \
-                ${libdir}/*.a ${libdir}/*.o ${libdir}/pkgconfig \
-	        /lib/*.a /lib/*.o ${datadir}/aclocal"
+    ${libdir}/*.a ${libdir}/*.o ${libdir}/pkgconfig \
+    /lib/*.a /lib/*.o ${datadir}/aclocal \
+"
 FILES_${PN}-dev = ""
 FILES_libgnokii = "${libdir}/libgnokii.so.*"
 

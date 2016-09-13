@@ -18,12 +18,13 @@ FILES_${PN}     += "${libdir}/tomoyo"
 FILES_${PN}-dbg += "${libdir}/tomoyo/.debug"
 
 DEPENDS = "linux-libc-headers ncurses"
-CFLAGS_append += "-D_GNU_SOURCE"
+
+EXTRA_OEMAKE = "-e USRLIBDIR=${libdir}"
 
 do_compile () {
-	oe_runmake 'CC=${CC}'
+    oe_runmake 'CC=${CC}'
 }
 
 do_install() {
-	oe_runmake install INSTALLDIR=${D}
+    oe_runmake install INSTALLDIR=${D}
 }

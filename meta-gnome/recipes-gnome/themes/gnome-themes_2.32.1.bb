@@ -6,10 +6,10 @@ PR = "r3"
 
 SECTION = "x11/gnome"
 DEPENDS = "gtk-engines icon-naming-utils icon-naming-utils-native glib-2.0 intltool-native libxml-simple-perl-native"
-RDEPENDS_${PN} = "gnome-icon-theme"
+RDEPENDS_${PN} = "adwaita-icon-theme"
 
 EXTRA_OECONF += "--enable-all-themes \
-    --with-iconmap=${STAGING_LIBDIR_NATIVE}/icon-naming-utils/icon-name-mapping \
+    --with-iconmap=${STAGING_LIBEXECDIR_NATIVE}/icon-name-mapping \
 "
 
 inherit gnomebase perlnative
@@ -25,6 +25,9 @@ FILES_gnome-theme-mist = "${datadir}/themes/Mist ${datadir}/icons/Mist"
 
 FILES_${PN} += "${datadir}/themes ${datadir}/icons"
 
-SRC_URI += "file://iconpath-option.patch" 
+SRC_URI += "file://iconpath-option.patch \
+    file://drop-localedir-override.patch \
+"
 SRC_URI[archive.md5sum] = "41db9e3cb25d35af2675c599e67944d1"
 SRC_URI[archive.sha256sum] = "8601ee24c2e096593221cbd6ebdb6686042225a03c02a01c0d67c163f9febd1a"
+GNOME_COMPRESS_TYPE="bz2"

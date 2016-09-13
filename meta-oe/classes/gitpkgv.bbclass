@@ -61,11 +61,18 @@ def get_git_pkgv(d, use_tags):
     #
     format = d.getVar('SRCREV_FORMAT', True)
     if not format:
-        format = 'default'
+        names = []
+        for url in ud.values():
+            if url.type == 'git' or url.type == 'gitsm':
+                names.extend(url.revisions.keys())
+        if len(names) > 0:
+            format = '_'.join(names)
+        else:
+            format = 'default'
 
     found = False
     for url in ud.values():
-        if url.type == 'git':
+        if url.type == 'git' or url.type == 'gitsm':
             for name, rev in url.revisions.items():
                 if not os.path.exists(url.localpath):
                     return None
@@ -87,11 +94,13 @@ def get_git_pkgv(d, use_tags):
 
                     if commits != "":
                         oe.path.remove(rev_file, recurse=False)
-                        open(rev_file, "w").write("%d\n" % int(commits))
+                        with open(rev_file, "w") as f:
+                            f.write("%d\n" % int(commits))
                     else:
                         commits = "0"
                 else:
-                    commits = open(rev_file, "r").readline(128).strip()
+                    with open(rev_file, "r") as f:
+                        commits = f.readline(128).strip()
 
                 if use_tags:
                     try:

@@ -14,13 +14,14 @@ RCONFLICTS_${PN} = "mplayer"
 REQUIRED_DISTRO_FEATURES = "x11"
 
 # because it depends on libpostproc/libav which has commercial flag
-LICENSE_FLAGS = "${@base_contains('PACKAGECONFIG', 'postproc', 'commercial', '', d)}"
+LICENSE_FLAGS = "${@bb.utils.contains('PACKAGECONFIG', 'postproc', 'commercial', '', d)}"
 
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d32239bcb673463ab874e80d47fae504"
 
 SRC_URI = "git://repo.or.cz/mplayer.git \
     file://0001-configure-don-t-disable-ASS-support-when-explicitly-.patch \
+    file://0001-demux_ogg-partially-port-libtheora-glue-code-to-Theo.patch \
 "
 
 SRCREV = "2c378c71a4d9b1df382db9aa787b646628b4e3f9"
@@ -138,7 +139,7 @@ do_configure() {
     sed -i 's|extra_cflags="-I. $extra_cflags"|extra_cflags="-I. -I${STAGING_INCDIR}/directfb $extra_cflags"|g' ${S}/configure
     export SIMPLE_TARGET_SYS="$(echo ${TARGET_SYS} | sed s:${TARGET_VENDOR}::g)"
     ./configure ${EXTRA_OECONF}
-    
+
 }
 
 do_compile () {
@@ -153,3 +154,6 @@ do_install() {
     install ${S}/etc/codecs.conf ${D}/usr/etc/mplayer/
     [ -e ${D}/usr/lib ] && rmdir ${D}/usr/lib
 }
+
+# http://errors.yoctoproject.org/Errors/Details/40734/
+PNBLACKLIST[mplayer2] ?= "Not compatible with currently used ffmpeg 3"

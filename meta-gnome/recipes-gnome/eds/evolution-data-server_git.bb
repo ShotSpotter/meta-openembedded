@@ -22,12 +22,13 @@ SRC_URI = " \
     file://0003-Disable-Werror-for-automake.patch \
     file://0004-configure-Fix-libical-pkg-config-trying-to-use-host-.patch \
     file://0005-soup-adapt-to-new-libxml2-API-from-2.9.0.patch \
+    file://0006-configure.ac-do-not-overwrite-localedir.patch \
     file://iconv-detect.h \
 "
 
 S = "${WORKDIR}/git"
 
-inherit autotools gtk-doc pkgconfig gettext
+inherit autotools gtk-doc pkgconfig gettext gobject-introspection
 
 # -ldb needs this on some platforms
 LDFLAGS += "-lpthread"
@@ -41,9 +42,13 @@ do_configure_append () {
     cp ${WORKDIR}/iconv-detect.h ${S}
 }
 
+do_compile_prepend() {
+        export GIR_EXTRA_LIBS_PATH="${B}/camel/.libs:${B}/libedataserver/.libs"
+}
+
 EXTRA_OECONF = "--without-openldap \
                 --with-libdb=${STAGING_DIR_HOST}${prefix} \
-                --disable-nntp --disable-goa --disable-weather"
+                --disable-nntp --disable-goa --disable-weather --disable-gtk-doc"
 
 PACKAGES =+ "libcamel libcamel-dev libebook libebook-dev libecal libecal-dev \
              libedata-book libedata-book-dev libedata-cal libedata-cal-dev \

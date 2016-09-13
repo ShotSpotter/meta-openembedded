@@ -33,7 +33,7 @@ CACHED_CONFIGUREVARS += " \
     ac_cv_path_PYTHON="${STAGING_BINDIR_NATIVE}/python-native/python" \
 "
 
-PACKAGECONFIG ??= "${@base_contains('DISTRO_FEATURES', 'opengl', 'opengl', 'openglesv2', d)}"
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl', 'openglesv2', d)}"
 PACKAGECONFIG[opengl] = "--enable-gl,--enable-gles,glew"
 PACKAGECONFIG[openglesv2] = "--enable-gles,--enable-gl,"
 
@@ -43,7 +43,7 @@ EXTRA_OECONF = " \
     --enable-airplay \
     --disable-optical-drive \
     --enable-external-libraries \
-    ${@base_contains('DISTRO_FEATURES', 'opengl', '--enable-gl', '--enable-gles', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', '--enable-gl', '--enable-gles', d)} \
 "
 
 FULL_OPTIMIZATION_armv7a = "-fexpensive-optimizations -fomit-frame-pointer -O4 -ffast-math"
@@ -52,8 +52,6 @@ BUILD_OPTIMIZATION = "${FULL_OPTIMIZATION}"
 EXTRA_OECONF_append_armv7a = "--cpu=cortex-a8"
 
 # for python modules
-export HOST_SYS
-export BUILD_SYS
 export STAGING_LIBDIR
 export STAGING_INCDIR
 export PYTHON_DIR
@@ -94,6 +92,6 @@ RRECOMMENDS_${PN}_append = " libcec \
                              python-netclient \
                              libcurl \
                              xdpyinfo \
-                             ${@base_contains('DISTRO_FEATURES', 'opengl', 'mesa-demos', '', d)} \
+                             ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'mesa-demos', '', d)} \
 "
 RRECOMMENDS_${PN}_append_libc-glibc = " glibc-charmap-ibm850 glibc-gconv-ibm850"

@@ -8,10 +8,6 @@ AUTHOR = "Gustavo Sverzut Barbieri <barbieri@gmail.com>"
 DEPENDS = "python-cython-native python-pyrex-native python-numeric eina edbus python-dbus"
 RDEPENDS_${PN} += "python-lang python-dbus"
 
-# necessary to let the call for python-config succeed
-export BUILD_SYS
-export HOST_SYS
-
 inherit e-base autotools pkgconfig distutils-base
 
 SRCNAME = "python-e_dbus"
@@ -39,7 +35,7 @@ do_install_append() {
         done
         cd ${S}
         install -d ${D}${datadir}/${PN}/
-        cp -a examples ${D}${datadir}/${PN}/
+        cp -R --no-dereference --preserve=mode,links -v examples ${D}${datadir}/${PN}/
         find ${D}${datadir}/${PN}/examples -name ".svn" | xargs rm -rf
     fi
 }

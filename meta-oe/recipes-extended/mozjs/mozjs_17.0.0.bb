@@ -10,8 +10,11 @@ SRC_URI = " \
     file://0003-Add-AArch64-support.patch;patchdir=../../ \
     file://0004-mozbug746112-no-decommit-on-large-pages.patch;patchdir=../../ \
     file://0005-aarch64-64k-page.patch;patchdir=../../ \
-    file://0001-regenerate-configure.patch;patchdir=../../ \ 
+    file://0001-regenerate-configure.patch;patchdir=../../ \
     file://fix-the-compile-error-of-powerpc64.patch;patchdir=../../ \
+    file://fix_milestone_compile_issue.patch \
+    file://0010-fix-cross-compilation-on-i586-targets.patch;patchdir=../../ \
+    file://0001-add-support-for-big-endian-32bit-ARM.patch;patchdir=../../ \
   "
 
 SRC_URI[md5sum] = "20b6f8f1140ef6e47daa3b16965c9202"
@@ -19,7 +22,7 @@ SRC_URI[sha256sum] = "321e964fe9386785d3bf80870640f2fa1c683e32fe988eeb201b04471c
 
 S = "${WORKDIR}/${BPN}${PV}/js/src"
 
-inherit autotools pkgconfig perlnative
+inherit autotools pkgconfig perlnative pythonnative
 
 DEPENDS += "nspr zlib"
 
@@ -34,31 +37,37 @@ EXTRA_OECONF = " \
     --enable-threadsafe \
     --disable-static \
 "
-EXTRA_OECONF_append_armv4 += " \
+EXTRA_OECONF_append_armv4 = " \
     --disable-methodjit \
 "
 
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
+PACKAGECONFIG[x11] = "--with-x --x-includes=${STAGING_INCDIR} --x-libraries=${STAGING_LIBDIR},--without-x,virtual/libx11"
+
 # mozjs requires autoreconf 2.13
 do_configure() {
-    ( cd ${S} 
+    ( cd ${S}
       gnu-configize --force
       mv config.guess config.sub build/autoconf )
     ${S}/configure ${EXTRA_OECONF}
 }
 
 # patch.bbclass will try to apply the patches already present and fail, so clean them out
-do_sourceclean() {
-    (
-    cd ${WORKDIR}/${BPN}${PV}/patches
-    for i in $(cat series | awk '{print $1}') ; do
-        rm -f $i
-    done
-    rm -f series
-    )
+do_unpack() {
+    tar -xvf ${DL_DIR}/mozjs17.0.0.tar.gz -C ${WORKDIR}/
+    rm -rf ${WORKDIR}/${BPN}${PV}/patches
 }
 
-addtask sourceclean before do_patch after do_unpack
 
-PACKAGES =+ "lib${PN}"
-FILES_lib${PN} += "${libdir}/lib*.so"
+PACKAGES =+ "lib${BPN}"
+FILES_lib${BPN} += "${libdir}/lib*.so"
 FILES_${PN}-dev += "${bindir}/js17-config"
+
+# Fails to build with thumb-1 (qemuarm)
+#| {standard input}: Assembler messages:
+#| {standard input}:2172: Error: shifts in CMP/MOV instructions are only supported in unified syntax -- `mov r2,r1,LSR#20'
+#| {standard input}:2173: Error: unshifted register required -- `bic r2,r2,#(1<<11)'
+#| {standard input}:2174: Error: unshifted register required -- `orr r1,r1,#(1<<20)'
+#| {standard input}:2176: Error: instruction not supported in Thumb16 mode -- `subs r2,r2,#0x300'
+#| {standard input}:2178: Error: instruction not supported in Thumb16 mode -- `subs r5,r2,#52'
+ARM_INSTRUCTION_SET = "arm"

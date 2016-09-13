@@ -3,12 +3,16 @@ HOMEPAGE = "http://www.xelerance.com/software/xl2tpd/"
 SECTION = "net"
 DEPENDS = "ppp virtual/kernel"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0636e73ff0215e8d672dc4c32c317bb3"
 
 INC_PR = "r0"
 
-SRC_URI = "git://github.com/xelerance/xl2tpd.git"
+SRC_URI = "git://github.com/xelerance/xl2tpd.git \
+    file://fix-inline-functions-errors-with-gcc-5.x.patch \
+"
 
 S = "${WORKDIR}/git"
 

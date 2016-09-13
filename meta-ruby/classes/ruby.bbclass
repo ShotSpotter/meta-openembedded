@@ -18,7 +18,7 @@ def get_rubyversion(p):
     if not isfile(cmd):
        return found_version
 
-    version = subprocess.Popen([cmd, "--version"], stdout=subprocess.PIPE).communicate()[0]
+    version = subprocess.Popen([cmd, "--version"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
     
     r = re.compile("ruby ([0-9]+\.[0-9]+\.[0-9]+)*")
     m = r.match(version)
@@ -38,7 +38,7 @@ def get_rubygemslocation(p):
     if not isfile(cmd):
        return found_loc
 
-    loc = subprocess.Popen([cmd, "env"], stdout=subprocess.PIPE).communicate()[0]
+    loc = subprocess.Popen([cmd, "env"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
 
     r = re.compile(".*\- (/usr.*/ruby/gems/.*)")
     for line in loc.split('\n'):
@@ -60,7 +60,7 @@ def get_rubygemsversion(p):
     if not isfile(cmd):
        return found_version
 
-    version = subprocess.Popen([cmd, "env", "gemdir"], stdout=subprocess.PIPE).communicate()[0]
+    version = subprocess.Popen([cmd, "env", "gemdir"], stdout=subprocess.PIPE).communicate()[0].decode("utf-8")
     
     r = re.compile(".*([0-9]+\.[0-9]+\.[0-9]+)$")
     m = r.match(version)
@@ -111,6 +111,10 @@ FILES_${PN}-dbg += " \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/.debug \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/*/.debug \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/*/*/.debug \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions/*/*/.debug \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions/*/*/*/.debug \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions/*/*/*/*/.debug \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions/*/*/*/*/*/.debug \
         "
 
 FILES_${PN} += " \
@@ -118,6 +122,8 @@ FILES_${PN} += " \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/cache \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/specifications \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/build_info \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions \
         "
 
 FILES_${PN}-doc += " \

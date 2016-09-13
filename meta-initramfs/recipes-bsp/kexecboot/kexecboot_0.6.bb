@@ -47,11 +47,13 @@ SRC_URI += "\
             file://0002-kexecboot-fix-configure-warnings.patch \
             file://0003-kexecboot-do-not-hardcode-MOUNTPOINT.patch \
             file://0004-kexecboot.c-workaround-for-absolute-kernel-and-initr.patch \
+            \
+            file://0005-rgb.h-fix-build-with-gcc5.patch \
             "
 
 inherit autotools
 
-EXTRA_OECONF = "--enable-delay=2 --enable-evdev-rate=1000,250"
+EXTRA_OECONF = "--enable-textui --enable-delay=2 --enable-evdev-rate=1000,250"
 
 do_install () {
     install -d ${D}${bindir}

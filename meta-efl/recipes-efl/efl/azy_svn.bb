@@ -1,6 +1,6 @@
 DESCRIPTION = "Azy is a library meant for implementing rpc clients and servers in a simple manner."
 DEPENDS = "pkgconfig zlib openssl eina gnutls ecore libxml2 re2c-native mysql5 azy-native glib-2.0"
-DEPENDS_virtclass-native = "pkgconfig-native zlib-native openssl-native eina-native gnutls-native ecore-native libxml2-native re2c-native mysql5-native glib-2.0-native"
+DEPENDS_class-native = "pkgconfig-native zlib-native openssl-native eina-native gnutls-native ecore-native libxml2-native re2c-native mysql5-native glib-2.0-native"
 LICENSE = "LGPLv2.1+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
@@ -30,3 +30,8 @@ inherit efl
 SRC_URI = "${E_SVN}/trunk/PROTO;module=${SRCNAME};protocol=http;scmdata=keep"
 S = "${WORKDIR}/${SRCNAME}"
 
+# azy/2_1.0.0+svnr82070-r2/azy/src/lib/extras/pugixml.cpp:33:
+# sysroots/qemuarm/usr/include/c++/5.2.0/bits/basic_string.h:4780:5: error: reference to 'basic_string' is ambiguous
+#     basic_string<_CharT, _Traits, _Alloc>
+#     ^
+PNBLACKLIST[azy] ?= "OLD and doesn't build with gcc-5"

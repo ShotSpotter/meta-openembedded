@@ -16,11 +16,14 @@ SRC_URI[netcat-patch.sha256sum] = "eee759327ffea293e81d0dde67921b7fcfcad279ffd7a
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
+EXTRA_OEMAKE += "'LDFLAGS=${LDFLAGS}'"
+
 do_configure[noexec] = "1"
 
 netcat_do_patch() {
     cd ${S}
-    while read line; do patch -p1 < ${WORKDIR}/debian/patches/$line; done < ${WORKDIR}/debian/patches/series
+    quilt pop -a || true
+    QUILT_PATCHES=${WORKDIR}/debian/patches QUILT_SERIES=${WORKDIR}/debian/patches/series quilt push -a
 }
 
 python do_patch() {

@@ -20,6 +20,8 @@ inherit autotools-brokensep pkgconfig
 
 PARALLEL_MAKE = ""
 
+TARGET_CFLAGS_append = " -fno-tree-dce -fno-optimize-sibling-calls"
+
 LDFLAGS_append = " -Wl,-rpath-link,${CROSS_DIR}/${TARGET_SYS}/lib"
 
 EXTRA_OECONF = " --without-tcl --without-qt --without-pam --without-valgrind"
@@ -44,3 +46,6 @@ FILES_libwvstreams-extras-dbg = "${libdir}/.debug/libwvbase.so.* ${libdir}/.debu
 
 FILES_${PN}-valgrind = "${libdir}/valgrind/wvstreams.supp"
 RDEPENDS_${PN} += "perl"
+
+# http://errors.yoctoproject.org/Errors/Details/68614/
+PNBLACKLIST[wvstreams] ?= "BROKEN: fails to build with gcc-6"

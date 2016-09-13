@@ -8,12 +8,15 @@ DEPENDS = "intltool libxxf86misc libsndfile1 libxtst glib-2.0 polkit gtk+ gconf 
 
 inherit gnome
 
-SRC_URI = "git://git.gnome.org/gnome-settings-daemon;branch=gnome-2-32"
+SRC_URI = " \
+    git://git.gnome.org/gnome-settings-daemon;branch=gnome-2-32 \
+    file://0001-Require-libnotify-0.6.0.patch \
+"
 SRCREV = "0160f6725cfb872e017f3958f108792c3b882872"
 
 S = "${WORKDIR}/git"
 
-PACKAGECONFIG ??= "${@base_contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)"
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)}"
 PACKAGECONFIG[pulseaudio] = "--enable-pulse,--disable-pulse,pulseaudio glib-2.0 libcanberra"
 PACKAGECONFIG[smartcard] = "--enable-smartcard-support,--disable-smartcard-support,nss"
 

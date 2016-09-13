@@ -5,6 +5,8 @@ LICENSE = "GPL-2.0 & LGPL-2.0"
 
 DEPENDS = "virtual/kernel flex flex-native"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 SRC_URI = "http://nchc.dl.sourceforge.net/project/${BPN}/${BPN}/${PV}/${BPN}-${PV}.tar.gz \
            file://link-with-ldflags.patch \
            file://install-from-buildir.patch"
@@ -19,4 +21,7 @@ file://COPYING.LGPL;md5=6e29c688d912da12b66b73e32b03d812"
 
 inherit autotools pkgconfig
 
-FILES_${PN} += "${base_libdir}/firmware"
+# The firmware is explicitly put under /lib when installed.
+#
+
+FILES_${PN} += "/lib/firmware"

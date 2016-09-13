@@ -61,7 +61,7 @@ do_configure_prepend() {
     sed -ri "s#/(bin|include|lib)(/?\")#/\1/${LLVM_DIR}\2#g" ${S}/tools/llvm-config/llvm-config.cpp
 
     # Fix the hardcoded libdir in llvm-config
-    sed -i 's:/lib\>:${base_libdir}:g' ${S}/tools/llvm-config/llvm-config.cpp
+    sed -i 's:/lib\>:/${baselib}:g' ${S}/tools/llvm-config/llvm-config.cpp
 
     # Fails to build unless using separate directory from source
     mkdir -p ${LLVM_BUILD_DIR}
@@ -72,7 +72,7 @@ do_compile() {
     cd ${LLVM_BUILD_DIR}
 
     # Fix libdir for multilib
-    sed -i 's:(PROJ_prefix)/lib:(PROJ_prefix)${base_libdir}:g' Makefile.config
+    sed -i 's:(PROJ_prefix)/lib:(PROJ_prefix)/${baselib}:g' Makefile.config
 
     oe_runmake \
         AR="${BUILD_AR}" \
@@ -116,23 +116,33 @@ llvm_sysroot_preprocess() {
     mv ${LLVM_INSTALL_DIR}/llvm-config-host ${SYSROOT_DESTDIR}${bindir_crossscripts}/llvm-config${PV}
 }
 
+PACKAGES += "${PN}-bugpointpasses ${PN}-llvmhello"
 ALLOW_EMPTY_${PN} = "1"
 ALLOW_EMPTY_${PN}-staticdev = "1"
 FILES_${PN} = ""
 FILES_${PN}-staticdev = ""
-DOTDEBUG-dbg = " ${bindir}/${LLVM_DIR}/.debug \
-                 ${libdir}/${LLVM_DIR}/.debug/BugpointPasses.so \
-                 ${libdir}/${LLVM_DIR}/.debug/LLVMHello.so \
-                 /usr/src/debug \
+FILES_${PN}-dbg = " \
+    ${bindir}/${LLVM_DIR}/.debug \
+    ${libdir}/${LLVM_DIR}/.debug/BugpointPasses.so \
+    ${libdir}/${LLVM_DIR}/.debug/LLVMHello.so \
+    /usr/src/debug \
 "
 
-FILES_${PN}-dev = "${bindir}/${LLVM_DIR} \
-                   ${includedir}/${LLVM_DIR} \
-                   ${libdir}/${LLVM_DIR}/BugpointPasses.so \
-                   ${libdir}/${LLVM_DIR}/LLVMHello.so \
+FILES_${PN}-dev = " \
+    ${bindir}/${LLVM_DIR} \
+    ${includedir}/${LLVM_DIR} \
+"
+RRECOMMENDS_${PN}-dev += "${PN}-bugpointpasses ${PN}-llvmhello"
+
+FILES_${PN}-bugpointpasses = "\
+    ${libdir}/${LLVM_DIR}/BugpointPasses.so \
+"
+FILES_${PN}-llvmhello = "\
+    ${libdir}/${LLVM_DIR}/LLVMHello.so \
 "
 
-PACKAGES_DYNAMIC = "^libllvm-.*$"
+PACKAGES_DYNAMIC = "^libllvm${LLVM_RELEASE}-.*$"
+NOAUTOPACKAGEDEBUG = "1"
 
 INSANE_SKIP_${MLPREFIX}libllvm${LLVM_RELEASE}-llvm-${LLVM_RELEASE} += "dev-so"
 
