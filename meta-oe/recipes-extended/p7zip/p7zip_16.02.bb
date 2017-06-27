@@ -3,7 +3,7 @@ HOMEPAGE = "http://www.7-zip.org/"
 LICENSE = "LGPL-2.1+ & unRAR"
 LIC_FILES_CHKSUM = "file://DOC/copying.txt;md5=4fbd65380cdd255951079008b364516c \
                     file://DOC/unRarLicense.txt;md5=9c87ddde469ef94aed153b0951d088de \
-                    file://DOC/License.txt;md5=8346bfd0a2fa0987e7a3a512adf84ab9"
+                    file://DOC/License.txt;md5=879598edf1f54dddb6930d7581357f8b"
 
 SRC_URI = "http://downloads.sourceforge.net/p7zip/p7zip/${PV}/p7zip_${PV}_src_all.tar.bz2 \
           file://do_not_override_compiler_and_do_not_strip.patch"
@@ -29,8 +29,10 @@ do_install_class-native() {
 
     # Create a shell script wrapper to execute next to 7z.so
     mv ${D}${bindir}/7z ${D}${bindir}/7z.bin
-    echo "#! /bin/sh" > ${D}${bindir}/7z
-    echo "exec ${D}${bindir}/7z.bin \"\$@\"" >> ${D}${bindir}/7z
+    cat > ${D}${bindir}/7z << 'EOF'
+#!/bin/sh
+exec "$(dirname "$0")"/7z.bin "$@"
+EOF
     chmod 0755 ${D}${bindir}/7z
 }
 

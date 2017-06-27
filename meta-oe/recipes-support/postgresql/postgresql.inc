@@ -40,6 +40,8 @@ export LDFLAGS_SL = "${LDFLAGS}"
 
 inherit autotools pkgconfig perlnative pythonnative useradd update-rc.d systemd
 
+CFLAGS += "-I${STAGING_INCDIR}/${PYTHON_DIR}"
+
 SYSTEMD_SERVICE_${PN} = "postgresql.service"
 SYSTEMD_AUTO_ENABLE_${PN} = "disable"
 
@@ -89,7 +91,7 @@ python populate_packages_prepend() {
             fpack="${PN}-" + name + "-dbg" + " " + fpack
         d.setVar('PACKAGES', fpack)
 
-    conf=(d.getVar('PACKAGECONFIG', True) or "").split()
+    conf=(d.getVar('PACKAGECONFIG') or "").split()
     pack=d.getVar('PACKAGES', False) or ""
     bb.debug(1, "PACKAGECONFIG=%s" % conf)
     bb.debug(1, "PACKAGES1=%s" % pack )
@@ -103,18 +105,12 @@ python populate_packages_prepend() {
     if "python" in conf:
         fill_more("plpython")
 
-    pack=d.getVar('PACKAGES', True) or ""
+    pack=d.getVar('PACKAGES') or ""
     bb.debug(1, "PACKAGES2=%s" % pack)
 
 }
 
 do_configure() {
-    # do_configure_prepend
-    # make sure configure finds python includdirs with these envs
-    export \
-           STAGING_INCDIR=${STAGING_INCDIR} \
-           STAGING_LIBDIR=${STAGING_LIBDIR}
-
     # do_configure
     autotools_do_configure
 
@@ -179,7 +175,7 @@ do_install_append() {
 
     # install COPYRIGHT README HISTORY
     install -d -m 0755 ${D}${docdir}/${BPN}
-    for i in ${B}/{COPYRIGHT,README,HISTORY} ${B}/doc/{KNOWN_BUGS,MISSING_FEATURES,README*,bug.template}; do
+    for i in ${B}/COPYRIGHT ${B}/README ${B}/HISTORY ${B}/doc/KNOWN_BUGS ${B}/doc/MISSING_FEATURES ${B}/doc/README* ${B}/doc/bug.template; do
         [ -f $i ] && install $i ${D}${docdir}/${BPN}
     done
 
@@ -195,7 +191,7 @@ do_install_append() {
     # multiple server config directory
     install -d -m 700 ${D}${sysconfdir}/default/${BPN}
 
-    if [ "${@d.getVar('enable_pam', True)}" = "pam" ]; then
+    if [ "${@d.getVar('enable_pam')}" = "pam" ]; then
         install -d ${D}${sysconfdir}/pam.d
         install -m 644 ${WORKDIR}/postgresql.pam ${D}${sysconfdir}/pam.d/postgresql
     fi
@@ -225,7 +221,7 @@ FILES_${PN} += "${sysconfdir}/init.d/${BPN}-server \
     ${libdir}/${BPN}/libpqwalreceiver.so \
     ${libdir}/${BPN}/*_and_*.so \
     ${@'${sysconfdir}/pam.d/postgresql' \
-       if 'pam' == d.getVar('enable_pam', True) \
+       if 'pam' == d.getVar('enable_pam') \
        else ''} \
 "
 
